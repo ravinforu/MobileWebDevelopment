@@ -2,8 +2,8 @@
 <html>
 <head>
 	<link rel="stylesheet" href="jquery.mobile-1.1.1.css">
-	<script src="jquery-1.7.2.js"></script>
-	<script src="jquery.mobile-1.1.1.js"></script>
+	<script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery.mobile-1.1.1.js"></script>
 	<script>
 		var countriesList;
 		var citiesList = [];
@@ -89,6 +89,7 @@
 					password : password
 				},
 				success : function(response){
+					console.log("---"+response+"---");
 					if(response == "success"){
 						if($("#rememberChk:checked")){
 							localStorage.setItem("username", user);
