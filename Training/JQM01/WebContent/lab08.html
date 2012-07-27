@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+<head>
+	<link rel="stylesheet" href="jquery.mobile-1.1.1.css">
+	<script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery.mobile-1.1.1.js"></script>
+	<script>
+		var cache = false;
+		var countriesList;
+		
+		function createCountryItem(country){
+			var li = "<li>";
+			li += "<a onclick='showCities(\"" + country +  "\")'>";
+			li += country;
+			li += "</a>";
+			li += "</li>";
+			return li;
+		}
+		
+		function loadCountries(){
+			console.log("Cache is " + cache);
+			if(cache) {
+				var countryJSON = localStorage.getItem("countries");
+				console.log('Countries from Local ');
+				var countryArray = countryJSON.split(",");
+				console.log(countryArray);
+				countryArray.forEach(function(element, index, array){
+					$("#countries").append(createCountryItem(element));					
+				});
+				$("#countries").listview("refresh");
+				//cache = false;
+			} else {
+				console.log('Countries from Server');
+				$.getJSON("countries.jsp",function(response){
+					var countries = response.countries;
+					countries.forEach(function(element, index, array){
+						var country = element;
+						$("#countries").append(createCountryItem(country));
+					});
+					localStorage.setItem("countries", countries)
+					$("#countries").listview("refresh");
+				});
+			}
+			
+		}
+		
+		function showHomeScreen(){
+			$.mobile.changePage("#homeScreen");
+			loadCountries();
+		}
+		
+		function login(){
+			
+			var user = $("#userName").val();
+			var password = $("#password").val();
+			$.ajax({
+				url : "login.jsp",
+				data : {
+					username : user,
+					password : password
+				},
+				success : function(response){
+					console.log("---"+response+"---");
+					if(response == "success"){
+						if($("#rememberChk:checked")){
+							localStorage.setItem("username", user);
+							localStorage.setItem("password", password);						
+						}
+						showHomeScreen();
+					}
+					else
+						$("#errorDiv").show().fadeOut(4000);
+				}
+			});
+		}
+		$().ready(function(){
+			cache = false;
+			window.applicationCache.addEventListener("error", function(e){
+				console.log('Caching');
+				cache = true;
+				showHomeScreen();
+			});
+//			window.applicationCache.addEventListener("success", function(e) {
+				$("#errorDiv").css("background-color", "red").css("color", "white").hide();
+				$("#loginBtn").on("click",login);
+				$("#logoff,#logoff1").on("click",function(){
+					localStorage.removeItem("username");
+					localStorage.removeItem("password");
+					$.mobile.changePage("#mainScreen");
+					$("input").val("");
+					$("input:checkbox").prop("checked", false);
+				});
+				//$("#homeScreen").bind("pageinit",loadCountries);
+				if(localStorage.getItem("username") && localStorage.getItem("password")) {
+					//alert(localStorage.getItem("username") + " -- " + localStorage.getItem("password"));
+					showHomeScreen();
+				}				
+//			});
+		});
+	</script>
+</head>
+<body>
+	<div data-role="page" id="mainScreen">
+		<div data-role="header" data-theme="b">
+			<h3>Welcome to Banca Sella</h3>
+		</div>
+		<div data-role="content" data-theme="d">
+			<div id="errorDiv">Invalid Login Credentials - Unable to Login</div>
+			<div data-role="fieldcontain">
+				<label for="userName">User name: </label>
+				<input type="text" id="userName">
+			</div>
+			<div data-role="fieldcontain">
+				<label for="password">Password: </label>
+				<input type="password" id="password">
+			</div>
+			<div data-role="controlgroup">
+				<input type="checkbox" id="rememberChk" /><label for="rememberChk"> Remember Me</label>
+			</div>
+			<div data-role="button" id="loginBtn">Login</div>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+	<div data-role="page" id="homeScreen">
+		<div data-role="header">
+			<h2>Welcome home</h2>
+			<a id="logoff" href="#">Logoff</a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div data-role="collapsible-set" >
+				<div data-role="collapsible" data-content-theme="b" data-collapsed="false">
+					<h3>Countries</h3>
+					<ul data-role="listview" id="countries" data-inset="true">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+</body>
+</html>
