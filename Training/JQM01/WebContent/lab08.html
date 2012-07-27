@@ -7,7 +7,7 @@
 	<script>
 		var cache = false;
 		var countriesList;
-		
+		//alert(navigator.onLine);
 		function createCountryItem(country){
 			var li = "<li>";
 			li += "<a onclick='showCities(\"" + country +  "\")'>";
@@ -28,6 +28,7 @@
 					$("#countries").append(createCountryItem(element));					
 				});
 				$("#countries").listview("refresh");
+				$("#cacheMessage").show().fadeOut(4000);
 				//cache = false;
 			} else {
 				console.log('Countries from Server');
@@ -82,6 +83,7 @@
 			});
 //			window.applicationCache.addEventListener("success", function(e) {
 				$("#errorDiv").css("background-color", "red").css("color", "white").hide();
+				$("#cacheMessage").css("color", "red").hide();
 				$("#loginBtn").on("click",login);
 				$("#logoff,#logoff1").on("click",function(){
 					localStorage.removeItem("username");
@@ -136,6 +138,7 @@
 					</ul>
 				</div>
 			</div>
+			<div id="cacheMessage">You are not connected to the Internet.</div>
 		</div>
 		<div data-role="footer" data-theme="a">
 			<p>Copyrights reserved,2012.</p>
