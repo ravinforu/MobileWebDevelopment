@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Lab 3 - Exercise</title>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+$(function(){
+	$("input:text").each(function(){
+		$("input:text").attr("maxlength", "3")
+					.css("width", "40");
+		$(this).on("keyup", function(){
+			if($(this).val().length == 3) {
+				$(this).next().focus();
+			}
+		});
+	});
+	//$("#ip4").on("keyup", function(){
+		//if($(this).val().length == 3)
+			//$("#lock").focus();
+	//});
+	$("#lock").on("click", function(){
+		$("input:text").attr("disabled", true);
+		$("input:button").last().focus();
+	});
+	$("#unlock").on("click", function(){
+		$("input:text").attr("disabled", false);
+		$("input:text").first().focus();
+	});
+	
+});
+</script>
+</head>
+<body>
+IP Address: 
+<input type="text" id="ip1"> . 
+<input type="text" id="ip2"> . 
+<input type="text" id="ip3"> . 
+<input type="text" id="ip4">
+<input type="button" id="lock" value="Lock"> 
+<input type="button" id="unlock" value="UnLock">
+</body>
+</html>

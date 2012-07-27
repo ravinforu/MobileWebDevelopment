@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Ajax JSON</title>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+$(function(){
+	var citiesList = [];
+	function sendAjaxCountry(){
+		$.ajax({
+			url: "countries.jsp",
+			dataType: "json",
+			success: function(response) {
+				var countries = response.countries;
+				for(i=0;i<countries.length;i++) {
+					$('#country').append(new Option(countries[i], countries[i]));
+				}
+				
+				
+			},
+			error: function(xhr) {
+				alert("Error: " + xhr.statusText);
+			}
+		});
+	}
+
+	function populateCities(list){
+		for(i=0;i<list.length;i++) {
+			$('#cities').append(new Option(list[i], list[i]));
+		}
+	}
+	function sendAjaxCity(){
+		if(!citiesList[$("#country").val()]) {
+			console.log("Loading from server...");
+			$.ajax({
+				url: "cities.jsp",
+				dataType: "json",
+				data: {
+					country: $("#country").val()
+				},
+				success: function(response) {
+					$('#cities').html("");
+					citiesList[$("#country").val()] = response.cities;
+					populateCities(response.cities);
+				},
+				error: function(xhr) {
+					alert("Error: " + xhr.statusText);
+				}
+			});
+		} else {
+			console.log("Loading from cache...");
+			$("#cities").html("");
+			populateCities(citiesList[$("#country").val()]);
+		}
+	}
+	
+	sendAjaxCountry();
+	
+	$("#country").on("change", sendAjaxCity);
+	
+})
+</script>
+</head>
+<body>
+	Country: <select id="country">
+	<option>-- SELECT --</option>
+	</select><br/>
+	Cities: <select id="cities">
+	</select><br/>
+</body>
+</html>

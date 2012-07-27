@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Ajax JSON</title>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+$(function(){
+	function sendAjaxRequest(){
+		$.ajax({
+			url: "server.jsp",
+			dataType: "json",
+			data : {
+				name: $("#nameText").val()
+			},
+			success: function(response) {
+				$("#result").text(response.output);
+			},
+			error: function(xhr) {
+				alert("Error: " + xhr.statusText);
+			}
+		});
+	}
+	
+	$("#clickBtn").on("click", sendAjaxRequest);
+})
+</script>
+</head>
+<body>
+	Name: <input type="text" id="nameText"><br/>
+	<input type="button" value="Click" id="clickBtn"><br/>
+	<h2 id="result"></h2>
+</body>
+</html>

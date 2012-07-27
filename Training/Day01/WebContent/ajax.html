@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Lab 4 - Exercise</title>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+function sendAjaxRequest(){
+	$.ajax({
+		url: "banca.txt",
+		type: "GET",
+		success: function(response) {
+			alert(response);
+		},
+		error: function(xhr) {
+			alert("Error: " + xhr.statusText);
+		}
+	});
+}
+
+function sendAjaxToServer(){
+	$.ajax({
+		url: "server.jsp",
+		type: "GET",
+		data: {
+			name: $("#name").val(),
+			address: $("#address").text()
+		},
+		success: function(response) {
+			$("#result").css({
+				borderColor: "green",
+				border: "1px"
+			}).append(response);
+		},
+		error: function(xhr) {
+			alert("Error: " + xhr.statusText);
+		}
+	});
+}
+
+function getTime(){
+	$("#time1").load("time.jsp");
+}
+
+$().ready(function(){
+	window.setInterval("getTime()", 1000);
+	$("#clickBtn").on("click", sendAjaxRequest);
+	$("#greetBtn").on("click", sendAjaxToServer);
+});
+</script>
+</head>
+<body>
+<div id="time1"></div>
+<input type="button" id="clickBtn" value="Click"><br><br>
+<b>Name: </b><input type="text" id="name"><br>
+<b>Email: </b><div id="address" contenteditable="true">Click to enter email</div>
+<input type="button" id="greetBtn" value="Send"><br><br>
+<div id="result">
+</div>
+</body>
+</html>

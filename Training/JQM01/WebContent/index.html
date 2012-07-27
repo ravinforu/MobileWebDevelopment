@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>JQuery Mobile 01</title>
+<link rel="stylesheet" href="jquery.mobile-1.1.1.css"/>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/jquery.mobile-1.1.1.js"></script>
+<script>
+	$(function(){
+		$("#clickBtn").on("click", function(){
+			$.mobile.changePage("#homeScreen",{
+				transition: "pop"
+			});
+		});
+	});
+</script>
+</head>
+<body>
+	<div id="mainScreen" data-role="page">
+		<div data-role="header">
+			<h3>Welcome to Banca Sella</h3>
+		</div>
+		<div data-role="content">
+			<p>This is the first page of the first JQuery Mobile Application</p>
+			<div data-role="fieldcontain">
+				<label>Name: </label>
+				<input type="text">
+			</div>
+			<div data-role="button" id="clickBtn">Click</div>
+		</div>
+		<div data-role="footer">
+			<p>Copyright reserved, 2012</p>
+		</div>
+	</div>
+	<div id="homeScreen" data-role="page">
+		<div data-role="header">
+			<h3>Shop all departments</h3>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div data-role="collapsible-set">
+				<div data-role="collapsible">
+					<h3>Books</h3>
+					<ul data-role="listview" data-inset="true">
+						<li>Books</li>
+						<li>Textbooks</li>
+						<li>Magazines</li>
+					</ul>
+				</div>
+				<div data-role="collapsible">
+					<h3>Kindle</h3>
+					<ul data-role="listview" data-inset="true">
+						<li>Kindle Touch</li>
+						<li>Kindle Reader</li>
+					</ul>
+				</div>
+				<div data-role="collapsible">
+					<h3>Electronics</h3>
+					<ul data-role="listview" data-inset="true">
+						<li>E-Books</li>
+						<li>E-Magazines</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div data-role="footer">
+			<p>Copyright reserved, 2012</p>
+		</div>
+	</div>
+	<div data-role="page">Page 3</div>
+</body>
+</html>

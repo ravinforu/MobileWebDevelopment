@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+		//setItem,getItem,removeItem
+		if(localStorage.getItem("welcome"))
+			alert("Loaded from localStorage-->" + localStorage.getItem("welcome"));
+		else{
+			localStorage.setItem("welcome","Welcome to Banca Sella");
+			alert("Just created --> " + localStorage.getItem("welcome"));			
+		}
+		if(sessionStorage.getItem("welcome"))
+			alert("Loaded from sessionStorage-->" + sessionStorage.getItem("welcome"));
+		else{
+			sessionStorage.setItem("welcome","Welcome to jQM training");
+			alert("Just created(sessionStorage) --> " + sessionStorage.getItem("welcome"));			
+		}
+			
+		
+	</script>
+</head>
+<body>
+	
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Lab 4 - Exercise</title>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+$(function(){
+	function Person(name, age){
+		this.name = name;
+		this.age = age;
+		
+		if(Person.count)
+			Person.count++;
+		else
+			Person.count=1;
+	}
+	
+	var notifyAdd = $("#notify");
+	notifyAdd.css("background-color", "green").attr("width", "40").hide();
+
+	$("#add").on("click", function(){
+		var currentPerson = new Person($("#name").val(), $("#age").val());
+		var personRow = "<tr><td>" + currentPerson.name + "</td><td>" + currentPerson.age + "</td><td><input type='checkbox'></td></tr>";
+		$("#pplTbl").append(personRow);
+		notifyAdd.text("1 row added").show().fadeOut(2000);
+	});
+
+	
+	$("#remove").on("click", function(){
+		var removeCount = $("input:checkbox:checked").length;
+		$("input:checkbox:checked").parents("tr").remove();
+		notifyAdd.text(removeCount + " row(s) removed").show().fadeOut(2000);
+	});
+	
+});
+</script>
+</head>
+<body>
+Name:  
+<input type="text" id="name"><br>
+Age:  
+<input type="text" id="age"><br>
+<input type="button" id="add" value="Add"><br>
+
+<div id="people">
+<div id="notify">
+</div> 
+<table border="1" id="pplTbl">
+<tr><th>Name</th><th>Age</th><th>Remove</th></tr>
+</table>
+<br>
+<input type="button" id="remove" value="Remove"><br>
+</div>
+
+</body>
+</html>

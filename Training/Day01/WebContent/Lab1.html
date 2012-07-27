@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+<script>
+var add=function(){
+	var result = 0;
+	for(var i=0;i<arguments.length;i++){
+		result+=parseInt(arguments[i]);
+	}
+	document.getElementById("addResult").innerText += result;
+}
+
+var subtract=function(){
+	var result = 0;
+	for(var i=0;i<arguments.length;i++){
+		result-=parseInt(arguments[i]);
+	}
+	document.getElementById("subResult").innerText += result;
+}
+
+function invokeFunctions(){
+	for(var i=0;i<functionalArray.length;i++){
+		functionalArray[i](document.getElementById("field1").value, document.getElementById("field2").value);
+	}
+}
+
+var functionalArray = [];
+
+function addDynamicFunction(fn, field){
+	if(field.checked) {
+		alert("Adding : " + fn);
+		functionalArray.push(fn);
+	}
+}
+</script>
+</head>
+<body>
+	<h1>Lab - Exercise 1</h1>
+	<form id="frm">
+	<label for="field1">Field 1: </label>
+	<input type="text" id="field1"><br>
+	<label for="field2">Field 2: </label>
+	<input type="text" id="field2"><br>
+	<br>
+	<label for="addChk">Add: </label>
+	<input type="checkbox" id="addChk" onchange="addDynamicFunction(add, this)"><br>
+	<label for="subChk">Subtract: </label>
+	<input type="checkbox" id="subChk" onchange="addDynamicFunction(subtract, this)"><br>
+	<br>
+	<input type="button" id="btn" value="Submit" onclick="invokeFunctions()">
+	<div id="result">
+	<b>Result</b>
+	<div id="addResult"><br>Added Value is </div>
+	<div id="subResult"><br>Subtracted Value is</div>
+	</div>
+	</form>
+</body>
+</html>
