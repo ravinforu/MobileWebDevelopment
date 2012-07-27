@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebSQL HTML5</title>
+<script>
+	function createPersonTbl(txn){
+		var sql = "create table if not exists persons(id unique, name, age)";
+		txn.executeSql(sql);
+	}
+	
+	function createPersonRecord(txn){
+		var sql = "insert into persons values(?,?,?)";
+		txn.executeSql(sql,[1,"Ravi", 33], onSuccess, onError);
+	}
+	
+	function onSuccess(txn) {
+		console.log("Successfully inserted Record inside Person table");
+	}
+
+	function onError(txn, error) {
+		console.log("Error while inserting Record inside Person table: " + error.message);
+	}
+	
+	function displayPersonRecords(txn){
+		var query = "select * from persons";
+		txn.executeSql(query,[],function(tx,results){
+			var count = results.rows.length;
+			for(var i=0;i<count;i++){
+				var row = results.rows.item(i);
+				console.log(row.name + ", " + row.age);
+			}
+		});
+	}
+	
+	var db = openDatabase("Sella", "Database used for Training Purpose", "1.0", 1000000);
+	db.transaction(createPersonTbl);
+	db.transaction(createPersonRecord);
+	db.transaction(displayPersonRecords);
+</script>
+</head>
+<body>
+
+</body>
+</html>
