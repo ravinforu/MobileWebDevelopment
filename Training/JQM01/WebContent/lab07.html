@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="jquery.mobile-1.1.1.css">
+	<script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery.mobile-1.1.1.js"></script>
+	<script src="js/json2.js"></script>
+	<script>
+		var db; 
+		var countriesList = [];
+		var selectedCountry;
+		var citiesList = [];
+		
+		function createCountriesTbl(txn) {
+			var sql = "create table if not exists countries(countryName unique)";
+			txn.executeSql(sql);
+		}
+		
+		function createCitiesTbl(txn) {
+			var sql = "create table if not exists cities(country, cityName unique)";
+			txn.executeSql(sql);
+		}
+
+		function getCountries(txn) {
+			var query = "select * from countries";
+			countriesList = [];
+			db.transaction(function(txn){
+				txn.executeSql(query,[],function(tx,results){
+					var count = results.rows.length;
+					for(var i=0;i<count;i++){
+						var row = results.rows.item(i);
+						countriesList[i] = row.countryName;
+					}
+					console.log("Got countries from DB: " + countriesList);
+				});
+			});
+		}
+		
+		function insertCountries(txn) {
+			for(var i = 0; i < countriesList.length ; i++) {
+				var query = "insert into countries values(?)";
+				txn.executeSql(query, [countriesList[i]], onSuccessInsert, onErrorInsert);				
+			}
+			db.transaction(getCountries);
+		}
+
+		function getCities(txn) {
+			var query = "select * from cities where country = ?";
+			citiesList = [];
+			txn.executeSql(query,[selectedCountry],function(tx,results){
+				var count = results.rows.length;
+				for(var i=0;i<count;i++){
+					var row = results.rows.item(i);
+					citiesList[selectedCountry].push(row.cityName);
+				}
+				for(var i=0;i<countriesList.length;i++){
+					selectedCountry = countriesList[i];
+					db.transaction(getCities);
+				}
+			});
+		}
+		
+		function removeCountries(){
+			db.transaction(function(txn){
+				txn.executeSql("delete from countries",[],function(txn){
+					console.log("Countries flushed");
+				});
+			});
+		}
+
+		function removeCities(){
+			db.transaction(function(txn){
+				txn.executeSql("delete from cities",[],function(txn){
+					console.log("Cities flushed");
+				});
+			});
+		}
+		
+		function insertCities(txn) {
+			var cities = citiesList[selectedCountry];
+			for(var i = 0; i < cities.length ; i++) {
+				var query = "insert into cities values(?,?)";
+				txn.executeSql(query, [selectedCountry, cities[i]], onSuccessInsert, onErrorInsert);				
+			}
+		}
+		
+		function onSuccessInsert(txn) {
+			console.log("Record Inserted");
+		}
+		
+		function onErrorInsert(txn, error) {
+			console.log("Record not Inserted: " + error.message);
+		}
+		
+		function initializeDB() {
+			db = openDatabase("Sella", "Database used for Training Purpose", "1.0", 1000000);
+			db.transaction(createCountriesTbl);
+			db.transaction(createCitiesTbl);
+			db.transaction(getCountries);
+			for(var i=0;i<countriesList.length;i++){
+				selectedCountry = countriesList[i];
+				db.transaction(getCities);
+			}
+			
+		}
+		
+		
+		function createCityItem(city){
+			var li = "<li>";
+			li += city;
+			li += "</li>";
+			return li;
+		}
+		
+		function showCities(country){
+			$("#citiesScreenHeader").html("Cities in " + country);
+			$("#cities").html("");
+			console.log("After DB Call: " + citiesList[country]);
+			if(citiesList[country]){
+				console.log('Cities from Local');
+				var cities = citiesList[country];
+				console.log(cities);
+				cities.forEach(function(element, index, array){
+					$("#cities").append(createCityItem(element));
+				});
+				$.mobile.changePage("#citiesScreen");
+				$("#cities").listview("refresh");
+			} else {
+				console.log('Cities from Server');
+				$.getJSON("cities.jsp?country="+country,function(response){
+					citiesList[country] = response.cities;
+					var cities = response.cities;
+					console.log(cities);
+					cities.forEach(function(element, index, array){
+						var city = element;
+						$("#cities").append(createCityItem(city));
+					});
+					selectedCountry = country;
+					db.transaction(insertCities);
+				});
+				$.mobile.changePage("#citiesScreen");
+				$("#cities").listview("refresh");
+				
+			}
+		}
+		
+		function createCountryItem(country){
+			var li = "<li>";
+			li += "<a onclick='showCities(\"" + country +  "\")'>";
+			li += country;
+			li += "</a>";
+			li += "</li>";
+			return li;
+		}
+		
+		function loadCountries(){
+			getCountries();
+			console.log("After DB Call: " + countriesList);
+			if(countriesList.length > 1) {
+				console.log('Countries from Local DB');
+				console.log(countriesList);
+				countriesList.forEach(function(element, index, array){
+					$("#countries").append(createCountryItem(element));					
+				});
+				$("#countries").listview("refresh");
+			} else {
+				console.log('Countries from Server');
+				$.getJSON("countries.jsp",function(response){
+					countriesList = response.countries;
+					countriesList.forEach(function(element, index, array){
+						var country = element;
+						$("#countries").append(createCountryItem(country));
+					});
+					db.transaction(insertCountries);
+					db.transaction(getCountries);
+					$("#countries").listview("refresh");
+				});
+			}
+			
+		}
+		
+		function showHomeScreen(){
+			$.mobile.changePage("#homeScreen");
+		}
+		
+		function login(){
+			var user = $("#userName").val();
+			var password = $("#password").val();
+			$.ajax({
+				url : "login.jsp",
+				data : {
+					username : user,
+					password : password
+				},
+				success : function(response){
+					console.log("---"+response+"---");
+					if(response == "success"){
+						if($("#rememberChk:checked")){
+							localStorage.setItem("username", user);
+							localStorage.setItem("password", password);						
+						}
+						showHomeScreen();
+					}
+					else
+						$("#errorDiv").show().fadeOut(4000);
+				}
+			});
+		}
+		$().ready(function(){
+			initializeDB();
+			$("#errorDiv").css("background-color", "red").css("color", "white").hide();
+			$("#loginBtn").on("click",login);
+			$("#logoff,#logoff1").on("click",function(){
+				removeCountries();
+				removeCities();
+				countriesList = [];
+				citiesList = [];
+				localStorage.removeItem("username");
+				localStorage.removeItem("password");
+				$.mobile.changePage("#mainScreen");
+				$("input").val("");
+				$("input:checkbox").prop("checked", false);
+			});
+			$("#homeScreen").bind("pageinit",loadCountries);
+			if(localStorage.getItem("username") && localStorage.getItem("password")) {
+				//alert(localStorage.getItem("username") + " -- " + localStorage.getItem("password"));
+				showHomeScreen();
+			}
+		});
+	</script>
+</head>
+<body>
+	<div data-role="page" id="mainScreen">
+		<div data-role="header" data-theme="b">
+			<h3>Welcome to Banca Sella</h3>
+		</div>
+		<div data-role="content" data-theme="d">
+			<div id="errorDiv">Invalid Login Credentials - Unable to Login</div>
+			<div data-role="fieldcontain">
+				<label for="userName">User name: </label>
+				<input type="text" id="userName">
+			</div>
+			<div data-role="fieldcontain">
+				<label for="password">Password: </label>
+				<input type="password" id="password">
+			</div>
+			<div data-role="controlgroup">
+				<input type="checkbox" id="rememberChk" /><label for="rememberChk"> Remember Me</label>
+			</div>
+			<div data-role="button" id="loginBtn">Login</div>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+	<div data-role="page" id="homeScreen">
+		<div data-role="header">
+			<h2>Welcome home</h2>
+			<a id="logoff" href="#">Logoff</a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div data-role="collapsible-set" >
+				<div data-role="collapsible" data-content-theme="b" data-collapsed="false">
+					<h3>Countries</h3>
+					<ul data-role="listview" id="countries" data-inset="true">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+	<div data-role="page" id="citiesScreen">
+		<div data-role="header" data-theme="b">
+			<a href="#" data-rel="back">Back</a>
+			<a id="logoff1" href="#">Logoff</a>
+			<h2 id="citiesScreenHeader"></h2>
+		</div>
+		<div data-role="content" data-theme="b">
+			<ul data-role="listview" id="cities" data-inset="true">
+			</ul>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+</body>
+</html>
