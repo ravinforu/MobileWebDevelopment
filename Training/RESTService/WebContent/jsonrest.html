@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Accessing JSON return from REST Call</title>
+	<link rel="stylesheet" href="jquery.mobile-1.1.1.css">
+	<script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery.mobile-1.1.1.js"></script>
+	<script>
+		$(function(){
+			$("#weatherBtn").on("click", function(){
+				$.getJSON("stpi/reporter/summary/"+$("#city").val(),function(response){
+					var temp = response.temperature;
+					$("#weatherDiv").text(temp);
+				});
+			});
+		});
+	</script>
+</head>
+<body>
+	<div data-role="page" id="mainScreen">
+		<div data-role="header" data-theme="b">
+			<h3>Welcome to Weather Reporter</h3>
+		</div>
+		<div data-role="content" data-theme="d">
+			<div data-role="fieldcontain">
+				<label for="city">Enter City: </label>
+				<input type="text" id="city">
+			</div>
+			<div id="weatherDiv"></div>
+			<div data-role="button" id="weatherBtn">Weather</div>
+		</div>
+		<div data-role="footer" data-theme="a">
+			<p>Copyrights reserved,2012.</p>
+		</div>
+	</div>
+</body>
+</html>
