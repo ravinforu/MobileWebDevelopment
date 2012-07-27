@@ -2,8 +2,8 @@
 String username = request.getParameter("username");
 String password = request.getParameter("password");
 if("admin".equals(username) && "admin".equals(password)) {
-	out.println("{\"result\": \"success\"}");
+	out.print("success");
 } else {
-	out.println("{\"result\": \"failure\"}");
+	out.print("failure");
 }
 %>
