@@ -1,3 +1,14 @@
+window.GameHistory = Backbone.Model.extend({
+	defaults: {
+		attempt: 0,
+		guess: 0
+	}
+});
+
+window.GameHistoryList = Backbone.Collection.extend({
+	mode: GameHistory
+});
+
 window.GuessGame = Backbone.Model.extend({
 	defaults: {
 		message: "",
