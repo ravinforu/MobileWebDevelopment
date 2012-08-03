@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery-1.7.2.min.js"></script>
+	<script>
+		$(function(){
+			$("#capitalBtn").on("click", function(){
+				var country = $("#countryName").val();
+				if(country == "India")
+						$("#results").text("New Delhi");
+				else if(country == "USA")
+					$("#results").text("Washington");
+				else
+					$("#results").text("Unknown");
+			});
+		});
+	</script>
+</head>
+<body>
+	Country: <input type="text" id="countryName">
+	<input type="button" value="Show Capital" id="capitalBtn">
+	<h4 id="results"></h4>
+</body>
+</html>
