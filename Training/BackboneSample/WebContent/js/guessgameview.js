@@ -9,9 +9,9 @@ window.GuessGameView = Backbone.View.extend({
 		$(this.el).prepend("<h1>Lab 2 GuessGame with BackboneJS</h1>");
 	},
 	events: {
-		"click #btn" : "renderResult"
+		"click #btn" : "playGame"
 	},
-	renderResult: function(){
+	playGame: function(){
 		var userGuess = $("#inputGuess").val();
 		this.guessGame.play(userGuess);
 		$("#result").html(this.guessGame.get("message"));
