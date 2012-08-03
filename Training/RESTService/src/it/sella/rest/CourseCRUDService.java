@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,16 +26,24 @@ public class CourseCRUDService {
 	}
 	
 	@GET
+	@Path("/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Course> getAll(){
+		List<Course> courseList = new ArrayList<Course>(courses.values());
+		return courseList;
+	}
+
+	@GET
 	@Path("/list")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getAllCourse(){
-		List<String> courseList = new ArrayList<String>();
+	public String getAllCourse(){
+		String courseList = "";
 		for(Course course: courses.values()){
-			courseList.add(course.toCompleteString());
+			courseList+=course.toCompleteString() + "\n";
 		}
 		return courseList;
 	}
-	
+
 	@GET
 	@Path("/show/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -44,12 +51,12 @@ public class CourseCRUDService {
 		return courses.get(id);
 	}
 	
-	@POST
+	@GET
 	@Path("/add/{courseName}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String addCourse(@PathParam("courseName") String courseName){
 		Course newCourse = new Course();
-		Long courseId = new Long(courses.size());
+		Long courseId = new Long(courses.size()+1);
 		newCourse.setId(courseId);
 		newCourse.setCourseName(courseName);
 		courses.put(courseId, newCourse);
