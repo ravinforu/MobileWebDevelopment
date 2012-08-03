@@ -2,7 +2,7 @@ package it.sella.rest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name="courses")
 public class Course {
 	private Long id;
 	private String courseName;
