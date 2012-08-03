@@ -10,8 +10,7 @@
 	<script src="js/guessgameview.js"></script>
 <script>
 $(function(){
-	var guessGame = new GuessGame();
-	var guessGameView = new GuessGameView({model: guessGame});
+	var guessGameView = new GuessGameView({model: new GuessGame()});
 });
 </script>
 </head>
